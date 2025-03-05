@@ -39,6 +39,18 @@ async def sign():
     except Exception as e:
         return quart.Response(response=str(e), status=400)
 
+@app.get("/.well-known/stellar.toml")
+async def stellar_toml():
+    config = configparser.ConfigParser()
+    config.read('signing.ini')
+    account_id = config['signing']['account_id']
+    text = f""" 
+    ACCOUNTS = ["{account_id}"]
+    SIGNING_KEY = "{account_id}"
+    NETWORK_PASSPHRASE = "Test SDF Network ; September 2015"
+    """
+    return quart.Response(text, mimetype="text/json")
+    
 def main():
     app.run(debug=True, host="0.0.0.0", port=5003)
     
